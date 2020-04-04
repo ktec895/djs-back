@@ -43,15 +43,22 @@ const checkFileType = (file, cb) => {
 router.post('/images', (req, res) => {
     imageUpload(req, res, (error) => {
         if (error)
-            res.json({error})
+            res.json({
+                success: false,
+                error
+            })
         else {
             if(!req.file)
-                res.json('Error: no file found')
+                res.json({
+                    success: false,
+                    message: 'Error: no file found'
+                })
             else {
                 const filename = req.file.key
                 const location = req.file.location
 
                 res.json({
+                    success: true,
                     filename,
                     location
                 })

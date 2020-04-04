@@ -6,6 +6,23 @@ const ShowSchema = new Schema({
     genre: String,
     imageUrl: String,
     description: String,
+    times: [{
+        start: {
+            time: String,
+            abbrev: {
+                type: String,
+                enum: ['AM', 'PM']
+            }
+        },
+        end: {
+            time: String,
+            abbrev: {
+                type: String,
+                enum: ['AM', 'PM']
+            }
+        },
+        days: [String]
+    }],
     hosts: [mongoose.SchemaTypes.ObjectId],
     events: [mongoose.SchemaTypes.ObjectId]
 })

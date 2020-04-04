@@ -9,6 +9,7 @@ module.exports = gql`
         description: String
         hosts: [Host]
         events: [Event]
+        times: [TimeSig]
     }
 
     type Host {
@@ -24,6 +25,17 @@ module.exports = gql`
         name: String
         description: String
         date: Int
+    }
+
+    type TimeSig {
+        start: Time
+        end: Time
+        days: [String]
+    }
+
+    type Time {
+        time: String
+        abbrev: String
     }
 
     type Query {
