@@ -34,6 +34,7 @@ module.exports = {
                 genre: input.genre,
                 description: input.description,
                 hosts: input.hosts,
+                times: input.times,
                 events: []
             })
 

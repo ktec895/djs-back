@@ -50,6 +50,18 @@ module.exports = gql`
         genre: String
         description: String
         hosts: [ID]
+        times: [TimeSigInput]
+    }
+
+    input TimeSigInput {
+        start: TimeInput
+        end: TimeInput
+        days: [String]
+    }
+
+    input TimeInput {
+        time: String
+        abbrev: String
     }
 
     input HostInput {
