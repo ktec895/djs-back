@@ -6,6 +6,7 @@ module.exports = {
     Query: {
         shows: async () => await Show.find().exec(),
         show: async (_, {id}) => await Show.findOne({ _id: id }).exec(),
+        hosts: async () => await Host.find().exec(),
         host: async (_, {id}) => await Host.findOne({ _id: id }).exec(),
         event: async (_, {id}) => await Event.findOne({ _id: id}).exec()
     },
@@ -49,7 +50,8 @@ module.exports = {
             return show
         },
         updateAvatar: async (_, {hostId, imageUrl}) => await Host.findOneAndUpdate({ _id: hostId }, { avatarUrl: imageUrl }, { new: true }).exec(),
-        updateShowImage: async (_, {showId, imageUrl}) => await Show.findOneAndUpdate({ _id: showId }, { imageUrl }, { new: true }).exec()
+        updateShowImage: async (_, {showId, imageUrl}) => await Show.findOneAndUpdate({ _id: showId }, { imageUrl }, { new: true }).exec(),
+        updateShowDesc: async (_, {showId, desc}) => await Show.findOneAndUpdate({ _id: showId }, { description: desc }, { new: true }).exec()
     },
     Host: {
         shows: (parent, args) => parent.getAllShows(),

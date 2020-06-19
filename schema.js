@@ -41,6 +41,7 @@ module.exports = gql`
     type Query {
         shows: [Show]
         show(id: ID): Show
+        hosts: [Host]
         host(id: ID): Host
         event(id: ID): Event
     }
@@ -81,5 +82,6 @@ module.exports = gql`
         createShow(input: ShowInput): Show
         updateAvatar(hostId: ID, imageUrl: String): Host
         updateShowImage(showId: ID, imageUrl: String): Show
+        updateShowDesc(showId: ID, desc: String): Show
     }
 `

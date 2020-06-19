@@ -5,7 +5,9 @@ const mongoose = require('mongoose')
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
-const fileUpload = require('./fileUpload')
+
+const fileRoutes = require('./routes/files')
+const userRoutes = require('./routes/users')
 
 mongoose.connect(process.env.MONGO_URI, { 
     useNewUrlParser: true, 
@@ -22,11 +24,18 @@ const apollo = new ApolloServer({
     resolvers,
     playground: {
         endpoint: '/graphql'
+    },
+    context: ({ req }) => {
+        if(req.headers.authorization == null)
+            return null
+        
+        
     }
 })
 
 apollo.applyMiddleware({app})
 
-app.use('/api', fileUpload)
+app.use('/api/files', fileRoutes)
+app.use('/api/users', userRoutes)
 
 app.listen(8080, () => console.log('Listening for requests on port 8080'))
