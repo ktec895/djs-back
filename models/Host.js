@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Show = require('./Show')
 const Schema = mongoose.Schema
 
 const HostSchema = new Schema({

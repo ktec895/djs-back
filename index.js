@@ -2,6 +2,7 @@ const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 require('dotenv').config()
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
@@ -35,6 +36,7 @@ const apollo = new ApolloServer({
 
 apollo.applyMiddleware({app})
 
+app.use(bodyParser.json())
 app.use('/api/files', fileRoutes)
 app.use('/api/users', userRoutes)
 
