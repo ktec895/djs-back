@@ -149,7 +149,7 @@ router.post('/token', async (req, res) => {
       roles: user.roles,
       access_token: AuthenticationResult.AccessToken,
       refresh_token: AuthenticationResult.RefreshToken
-    }, process.env.JWT_SECRET, { expiresIn: '2 days' })
+    }, process.env.JWT_SECRET, { expiresIn: AuthenticationResult.ExpiresIn })
 
     res.status(201).send({
       message: 'User authenticated',
@@ -196,11 +196,25 @@ router.post('/token/temporary', async (req, res) => {
       }
     }
 
-    await cognito.respondToAuthChallenge(params).promise()
+    const { AuthenticationResult } = await cognito.respondToAuthChallenge(params).promise()
+
+    const user = await User.findOne({ username }).exec()
+
+    if (!user)
+      throw { message: 'User not found' }
+
+    const token = jwt.sign({
+      username: user.username,
+      roles: user.roles,
+      access_token: AuthenticationResult.AccessToken,
+      refresh_token: AuthenticationResult.RefreshToken
+    }, process.env.JWT_SECRET, { expiresIn: AuthenticationResult.ExpiresIn })
 
     res.status(200).send({
       message: 'New user confirmed and password set',
-      data: {}
+      data: {
+        token
+      }
     })
   } catch(err) {
     res.status(400).send({
