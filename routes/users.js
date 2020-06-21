@@ -49,8 +49,8 @@ router.post('/admin', async (req, res) => {
     const token_data = jwt.verify(token, process.env.JWT_SECRET)
 
     if(!token_data.roles.admin)
-      throw { message: 'Requires admin privilige' }
-      
+      throw { message: 'Requires admin privilege' }
+
     if (username === undefined || email === undefined || roles == undefined)
       throw { message: 'Missing required attributes' }
 
@@ -95,12 +95,12 @@ router.post('/admin', async (req, res) => {
 })
 
 // verify email
-router.put('/:user/verification', async (req, res) => {
+router.put('/:username/verification', async (req, res) => {
   try {
     const params = {
       ClientId: process.env.AWS_CLIENT_ID,
       ConfirmationCode: req.body.confirmation_code,
-      Username: req.params.user
+      Username: req.params.username
     }
 
     await cognito.confirmSignUp(params).promise()
@@ -132,7 +132,12 @@ router.post('/token', async (req, res) => {
       }
     }
 
-    const { AuthenticationResult } = await cognito.initiateAuth(params).promise()
+    const resData = await cognito.initiateAuth(params).promise()
+
+    if(resData.ChallengeName)
+      throw { message: 'Must create new password' }
+
+    const { AuthenticationResult } = resData
 
     const user = await User.findOne({ username }).exec()
 
@@ -153,6 +158,51 @@ router.post('/token', async (req, res) => {
       }
     })
   } catch (err) {
+    res.status(400).send({
+      message: err.message,
+      data: {}
+    })
+  }
+})
+
+router.post('/token/temporary', async (req, res) => {
+  try {
+    const { username, temp_password, new_password } = req.body
+
+    if (!username || !temp_password || !new_password)
+      throw { message: 'Missing required parameters' }
+
+    let params = {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: process.env.AWS_CLIENT_ID,
+      AuthParameters: {
+        'USERNAME': username,
+        'PASSWORD': temp_password
+      }
+    }
+
+    const { ChallengeName, Session } = await cognito.initiateAuth(params).promise()
+
+    if(!ChallengeName || ChallengeName !== 'NEW_PASSWORD_REQUIRED')
+      throw { message: 'Invalid authentication parameters' }
+    
+    params = {
+      ChallengeName,
+      Session,
+      ClientId: process.env.AWS_CLIENT_ID,
+      ChallengeResponses: {
+        'USERNAME': username,
+        'NEW_PASSWORD': new_password
+      }
+    }
+
+    await cognito.respondToAuthChallenge(params).promise()
+
+    res.status(200).send({
+      message: 'New user confirmed and password set',
+      data: {}
+    })
+  } catch(err) {
     res.status(400).send({
       message: err.message,
       data: {}
@@ -189,7 +239,7 @@ router.put('/token', async (req, res) => {
       }
     })
   } catch(err) {
-    res.send({
+    res.status(400).send({
       message: err.message,
       data: {}
     })
@@ -197,23 +247,120 @@ router.put('/token', async (req, res) => {
 })
 
 // forgot password
-// update forgotten password
-// update password
+router.put('/:username/password/forgot', async (req, res) => {
+  try {
+    const params = {
+      ClientId: process.env.AWS_CLIENT_ID,
+      Username: req.params.username
+    }
 
-const createUserWithRoles = async (name, roles) => {
-  const newUser = new User({ username: name })
+    await cognito.forgotPassword(params).promise()
 
-  newUser.set("roles.host", roles.host)
-  newUser.set("roles.admin", roles.admin)
-
-  if (roles.host) {
-    const newHost = new Host({ name })
-
-    newUser.set("hostId", newHost._id)
-
-    await newHost.save()
+    res.status(200).send({
+      message: 'Forgot password message sent',
+      data: {}
+    })
+  } catch(err) {
+    res.status(400).send({
+      message: err.message,
+      data: {}
+    })
   }
-  await newUser.save()
-}
+})
+
+// update forgotten password
+router.put('/:username/password/confirm', async (req, res) => {
+  try {
+    const { new_password, confirmation_code } = req.body
+
+    const params = {
+      ClientId: process.env.AWS_CLIENT_ID,
+      ConfirmationCode: confirmation_code,
+      Username: req.params.username,
+      Password: new_password
+    }
+
+    await cognito.confirmForgotPassword(params).promise()
+
+    res.status(200).send({
+      message: 'Forgotten password updated',
+      data: {}
+    })
+  } catch(err) {
+    res.status(400).send({
+      message: err.message,
+      data: {}
+    })
+  }
+})
+
+// update password
+router.put('/:username/password', async (req, res) => {
+  try {
+    const { previous_password, new_password, token } = req.body
+
+    const { access_token } = jwt.verify(token, process.env.JWT_SECRET)
+
+    if(!access_token)
+      throw { message: 'Invalid access token' }
+    
+    const params = {
+      AccessToken: access_token,
+      PreviousPassword: previous_password,
+      ProposedPassword: new_password
+    }
+
+    await cognito.changePassword(params).promise()
+
+    res.status(200).send({
+      message: 'Password updated',
+      data: {}
+    })
+  } catch(err) {
+    res.status(400).send({
+      message: err.message,
+      data: {}
+    })
+  }
+})
+
+router.put('/:username/roles', async (req, res) => {
+  try {
+    const { roles } = req.body
+    const { username } = req.params
+
+    const user = await User.findOne({ username }).exec()
+
+    if(!user.roles.host && roles.host)
+    {
+      const newHost = new Host({ name: username })
+
+      user.set('hostId', newHost._id)
+      user.set('roles.host', true)
+
+      await newHost.save()
+    }
+    else if(user.roles.host && !roles.host) {
+      await Host.findByIdAndDelete({ _id: user.hostId }).exec()
+
+      user.set('roles.host', false)
+    }
+
+    user.set('roles.admin', roles.admin)
+
+    await user.save()
+
+    res.status(200).send({
+      message: 'User Roles Updated',
+      data: {}
+    })
+
+  } catch(err) {
+    res.status(400).send({
+      message: err.message,
+      data: {}
+    })
+  }
+})
 
 module.exports = router
