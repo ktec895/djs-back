@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoosePaginate = require('mongoose-paginate-v2')
 const Schema = mongoose.Schema
 
 const ShowSchema = new Schema({
@@ -35,5 +36,7 @@ ShowSchema.methods.getAllHosts = async function() {
 ShowSchema.methods.getAllEvents = async function() {
     return await mongoose.model('Event').find({ _id: { $in: this.events }}).exec()
 }
+
+ShowSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('Show', ShowSchema)

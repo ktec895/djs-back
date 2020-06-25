@@ -5,7 +5,9 @@ const Host = require('../models/Host')
 const User = require('../models/User')
 const cognito = new AWS.CognitoIdentityServiceProvider({ region: 'us-west-2' })
 
-// create user
+/*
+
+*/
 router.post('/', async (req, res) => {
   try {
     const { username, password, email } = req.body
@@ -147,6 +149,7 @@ router.post('/token', async (req, res) => {
     const token = jwt.sign({
       username: user.username,
       roles: user.roles,
+      hostId: user.hostId,
       access_token: AuthenticationResult.AccessToken,
       refresh_token: AuthenticationResult.RefreshToken
     }, process.env.JWT_SECRET, { expiresIn: AuthenticationResult.ExpiresIn })

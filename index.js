@@ -3,6 +3,9 @@ const { ApolloServer } = require('apollo-server-express')
 require('dotenv').config()
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const jwt = require('jsonwebtoken')
+
+const extractToken = require('./extractToken')
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
@@ -27,10 +30,16 @@ const apollo = new ApolloServer({
         endpoint: '/graphql'
     },
     context: ({ req }) => {
-        if(req.headers.authorization == null)
+        try {
+            token = extractToken(req.headers.authorization)
+            
+            if(token == null)
+                return null
+            
+            return { user: jwt.verify(token, process.env.JWT_SECRET) }
+        } catch(err) {
             return null
-        
-        
+        }
     }
 })
 

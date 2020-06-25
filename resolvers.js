@@ -1,17 +1,35 @@
 const Show = require('./models/Show')
 const Host = require('./models/Host')
 const Event = require('./models/Event')
+const { GraphQLDateTime } = require('graphql-iso-date')
 
 module.exports = {
     Query: {
-        shows: async () => await Show.find().exec(),
+        shows: async (_, {page, limit}) => {
+            if(page < 1 || limit < 1)
+                return []
+
+            const { docs } = await Show.paginate({}, { page, limit })
+            
+            return docs
+        }, 
         show: async (_, {id}) => await Show.findOne({ _id: id }).exec(),
-        hosts: async () => await Host.find().exec(),
+        hosts: async (_, {page, limit}) => {
+            if(page < 1 || limit < 1)
+                return []
+
+            const { docs } = await Host.paginate({}, {page, limit})
+
+            return docs
+        },
         host: async (_, {id}) => await Host.findOne({ _id: id }).exec(),
         event: async (_, {id}) => await Event.findOne({ _id: id}).exec()
     },
     Mutation: {
-        createHost: async (_, {input}) => {
+        createHost: async (_, {input}, { user }) => {
+            if(!user || !user.roles || !user.roles.admin)
+                return null
+
             const newHost = new Host({
                 name: input.name,
                 description: input.description,
@@ -20,16 +38,25 @@ module.exports = {
 
             return await newHost.save()
         },
-        createEvent: async (_, {input}) => {
+        createEvent: async (_, {input, showId}, { user }) => {
+            console.log(user)
+            if(!user || !user.roles || !(user.roles.host || user.roles.admin))
+                return null
+
             const newEvent = new Event({
                 name: input.name,
                 description: input.description,
                 date: new Date(input.date)
             })
+            
+            await Show.updateOne({ _id: showId}, { $push: { events: newEvent._id }}).exec()
 
             return await newEvent.save()
         },
-        createShow: async (_, {input}) => {
+        createShow: async (_, {input}, {user}) => {
+            if(!user || !user.roles || !user.roles.admin)
+                return null
+
             const newShow = new Show({
                 name: input.name,
                 genre: input.genre,
@@ -49,9 +76,30 @@ module.exports = {
 
             return show
         },
-        updateAvatar: async (_, {hostId, imageUrl}) => await Host.findOneAndUpdate({ _id: hostId }, { avatarUrl: imageUrl }, { new: true }).exec(),
-        updateShowImage: async (_, {showId, imageUrl}) => await Show.findOneAndUpdate({ _id: showId }, { imageUrl }, { new: true }).exec(),
-        updateShowDesc: async (_, {showId, desc}) => await Show.findOneAndUpdate({ _id: showId }, { description: desc }, { new: true }).exec()
+        updateAvatar: async (_, {hostId, imageUrl}, {user}) => {
+            if(!user || !user.roles || !user.roles.host)
+                return null
+
+            await Host.findOneAndUpdate({ _id: hostId }, { avatarUrl: imageUrl }, { new: true }).exec()
+        },
+        updateShowImage: async (_, {showId, imageUrl}, {user}) => {
+            if(!user || !user.roles || !user.roles.host)
+                return null
+
+            await Show.findOneAndUpdate({ _id: showId }, { imageUrl }, { new: true }).exec()
+        },
+        updateShowDesc: async (_, {showId, desc}, {user}) => {
+            if(!user || !user.roles || !user.roles.host)
+                return null
+
+            await Show.findOneAndUpdate({ _id: showId }, { description: desc }, { new: true }).exec()
+        },
+        updateShowTimes: async (_, {showId, times}, {user}) => {
+            if(!user || !user.roles || !user.roles.host)
+                return null
+
+            await Show.findOneAndUpdate({ _id: showId }, { times }, { new: true }).exec()
+        }
     },
     Host: {
         shows: (parent, args) => parent.getAllShows(),
@@ -59,5 +107,6 @@ module.exports = {
     Show: {
         hosts: (parent, args) => parent.getAllHosts(),
         events: (parent, args) => parent.getAllEvents()
-    }
+    },
+    DateTime: GraphQLDateTime
 }

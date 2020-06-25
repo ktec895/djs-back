@@ -24,7 +24,7 @@ module.exports = gql`
         id: ID
         name: String
         description: String
-        date: Int
+        date: DateTime
     }
 
     type TimeSig {
@@ -39,9 +39,9 @@ module.exports = gql`
     }
 
     type Query {
-        shows: [Show]
+        shows(page: Int, limit: Int): [Show]
         show(id: ID): Show
-        hosts: [Host]
+        hosts(page: Int, limit: Int): [Host]
         host(id: ID): Host
         event(id: ID): Event
     }
@@ -73,15 +73,18 @@ module.exports = gql`
     input EventInput {
         name: String
         description: String
-        date: Int
+        date: DateTime
     }
 
     type Mutation {
         createHost(input: HostInput): Host
-        createEvent(input: EventInput): Event
+        createEvent(input: EventInput, showId: ID): Event
         createShow(input: ShowInput): Show
         updateAvatar(hostId: ID, imageUrl: String): Host
         updateShowImage(showId: ID, imageUrl: String): Show
         updateShowDesc(showId: ID, desc: String): Show
+        updateShowTimes(showId: ID, times: [TimeSigInput]): Show
     }
+
+    scalar DateTime
 `
