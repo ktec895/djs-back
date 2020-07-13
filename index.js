@@ -48,5 +48,6 @@ apollo.applyMiddleware({app})
 app.use(bodyParser.json())
 app.use('/api/files', fileRoutes)
 app.use('/api/users', userRoutes)
+app.use(express.static('public'))
 
 app.listen(8080, () => console.log('Listening for requests on port 8080'))

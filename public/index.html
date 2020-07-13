@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-amber.min.css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <style>
+        body {
+            font-family: Roboto, Helvetica, sans-serif;
+        }
+
+        section {
+            width: 80%;
+            margin: 10px auto;
+            color: black;
+        }
+
+        .normal-link {
+            color: black;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        ul {
+            font-family: 'Roboto Mono', monospace
+        }
+
+        h6 {
+            font-family: 'Roboto Mono', monospace
+        }
+    </style>
+    <title>KTEC Documentation</title>
+</head>
+<body>
+    <div class='mdl-layout mdl-js-layout mdl-layout--fixed-header'>
+        <header class='mdl-layout__header' style='color: white'>
+            <div class='mdl-layout__header-row'>
+                <span class='mdl-layout-title'>KTEC DJ API</span>
+            </div>
+        </header>
+        <div class='mdl-layout__drawer'>
+            <span class='mdl-layout-title'>Reference</span>
+            <nav class='mdl-navigation'>
+                <a class='mdl-navigation__link' href='#introduction'>Introduction</a>
+                <a class='mdl-navigation__link' href='#graphql'>GraphQL</a>
+                <a class='mdl-navigation__link' href='#users'>Users</a>
+                <a class='mdl-navigation__link' href='#files'>Files</a>
+            </nav>
+        </div>
+        <main class='mdl-layout__content'>
+            <section>   
+                <a id='introduction' class='normal-link'><h3>Introduction</h3></a>
+                <p>
+                    This is the reference for a GraphQL and REST API developed for the KTEC DJ
+                    web app. There are two APIs for interacting with data. First, a GraphQL API 
+                    that allows users to retrieve data on shows, hosts, and events. This was chosen
+                    to make access for data without user login simple. The mutations on this API
+                    do require authentication, however. Second, a REST API is available to allow user
+                    authentication and file upload. The tokens retrieved from the auth flows of the REST 
+                    API can be used to do mutations in the GraphQL API given the user has the proper roles.
+                </p>
+                <p>
+                    Most of the reference for the GraphQL API is made available through the GraphiQL 
+                    interactive environment. This document serves mostly as documentation for the REST API.
+                </p>
+            </section>
+            <section>   
+                <a id='graphql' class='normal-link'><h3>GraphQL</h3></a>
+                <p>
+                    Any information accessed by non-authorized users can be accessed via the 
+                    GraphQL API. For any information on hosts, shows, and events, use this API.
+                    Most mutations are protected and require a token from an authorized user
+                    retrieved from the /users routes pertaining to auth flow. 
+                    The schema can be explored in the GraphiQL environment.
+                </p>
+                <p>The GraphiQL interactive environment can be accessed <a href='/graphql'>here</a></p>
+            </section>
+            <section>   
+                <a id='users' class='normal-link'><h3>Users</h3></a>
+                <p>This data is accessed from /api/users</p>
+                <div>
+                    <h6><span style='color:orange'>POST</span> /</h6>
+                    <p>
+                        This route is the first step in the create user flow. It will
+                        send a verification code to the user's email address. 
+                    </p>
+                    <div>
+                        <p>Request Body:</p>
+                        <ul>
+                            <li>username : String - new user's username. <span style='color: red'>required</span></li>
+                            <li>password : String - new user's password. <span style='color: red'>required</span></li>
+                            <li>email : String - new user's email address. <span style='color: red'>required</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h6><span style='color:orange'>POST</span> /admin</h6>
+                    <p>
+                        This route is the first step in the admin create user flow. It will
+                        send a verification code and temporary password to the user's email address.
+                    </p>
+                    <div>
+                        <p>Request Body:</p>
+                        <ul>
+                            <li>username : String - new user's username. <span style='color: red'>required</span></li>
+                            <li>email : String - new user's email address. <span style='color: red'>required</span></li>
+                            <li>roles : { host : Boolean, admin : Boolean } - new user's roles. <span style='color: red'>required</span></li>
+                            <li>token : String - token with admin privileges. <span style='color: red'>required</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /:username/verification</h6>
+                    <p>
+                        This route is the second step in the create user flow. It is
+                        used to verify the user's email address.
+                    </p>
+                    <div>
+                        <p>Request Body:</p>
+                        <ul>
+                            <li>confirmation_code : String - confirmation code sent to user's email. <span style='color: red'>required</span></li>
+                        </ul>
+                        <p>Query Parameters:</p>
+                        <ul>
+                            <li>username - username for user whose email is being verified</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h6><span style='color:orange'>POST</span> /token</h6>
+                    <p>
+                        This route is used to login in a verified user. 
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:orange'>POST</span> /token/temporary</h6>
+                    <p>
+                        This route is the second step in the admin create user flow. It
+                        is used to verify the user's email address and log them in.
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /token</h6>
+                    <p>
+                        This route is used to update a token.
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /:username/password/forgot</h6>
+                    <p>
+                        This route is the first step in the forgot password flow. It will 
+                        send a verification code to the user's email to be used to update their password.
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /:username/password/confirm</h6>
+                    <p>
+                        This route is the second step in the forgot password flow. Given 
+                        the verification code from the previous step, it will update the user's 
+                        password.
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /:username/password</h6>
+                    <p>
+                        This route is used to update a user's password given their old password. 
+                    </p>
+                </div>
+                <div>
+                    <h6><span style='color:blue'>PUT</span> /:username/roles</h6>
+                    <p>
+                        This route is used to update a user's roles. 
+                    </p>
+                </div>
+            </section>
+            <section>   
+                <a id='files' class='normal-link'><h3>Files</h3></a>
+                <p>This data is accessed from /api/files</p>
+            </section>
+        </main>
+        <footer class='mdl-mini-footer'>
+            <div class='mdl-mini-footer__left-section'>
+                <div class='mdl-logo'>KTEC DJ API</div>
+            </div>
+            <div class='mdl-mini-footer__right-section'>
+                <div class='mdl-logo'>Created by Tristen Mengis</div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
