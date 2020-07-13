@@ -213,7 +213,7 @@ router.post('/token/temporary', async (req, res) => {
       refresh_token: AuthenticationResult.RefreshToken
     }, process.env.JWT_SECRET, { expiresIn: AuthenticationResult.ExpiresIn })
 
-    res.status(200).send({
+    res.status(201).send({
       message: 'New user confirmed and password set',
       data: {
         token
@@ -249,7 +249,7 @@ router.put('/token', async (req, res) => {
     
     token.access_token = AuthenticationResult.AccessToken
 
-    res.send({
+    res.status(200).send({
       message: 'Token refreshed',
       data: {
         token
