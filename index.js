@@ -14,6 +14,8 @@ const resolvers = require('./resolvers')
 const fileRoutes = require('./routes/files')
 const userRoutes = require('./routes/users')
 
+const port = process.env.PORT || 8000
+
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -50,7 +52,7 @@ app.use('/api/files', fileRoutes)
 app.use('/api/users', userRoutes)
 app.use(express.static('public'))
 
-app.listen(8000, () => {
-  console.log('Open locally at: http://localhost:8000')
-  console.log(`Or on network at: http://${ip.address()}:8000`)
+app.listen(port, () => {
+  console.log(`Open locally at: http://localhost:${port}`)
+  console.log(`Or on network at: http://${ip.address()}:${port}`)
 })
