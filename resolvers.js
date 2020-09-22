@@ -39,7 +39,6 @@ module.exports = {
             return await newHost.save()
         },
         createEvent: async (_, {input, showId}, { user }) => {
-            console.log(user)
             if(!user || !user.roles || !(user.roles.host || user.roles.admin))
                 return null
 

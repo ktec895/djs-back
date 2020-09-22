@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
     const { username, password, email } = req.body
 
     if (username === undefined || password == undefined || email === undefined)
-      throw { message: 'Missing required attributes' }
+      throw { message: 'Missing required attributes', status: 403 }
 
     const params = {
       ClientId: process.env.AWS_CLIENT_ID,
@@ -32,12 +32,12 @@ router.post('/', async (req, res) => {
     await newUser.save()
 
     res.status(201).send({
-      message: 'Success! User Created',
+      message: 'User Created',
       data: {},
     })
 
   } catch (err) {
-    res.status(400).send({
+    res.status(err.status | 400).send({
       message: err.message,
       data: {},
     })
@@ -51,10 +51,10 @@ router.post('/admin', async (req, res) => {
     const token_data = jwt.verify(token, process.env.JWT_SECRET)
 
     if(!token_data.roles.admin)
-      throw { message: 'Requires admin privilege' }
+      throw { message: 'Requires admin privilege', status: 401 }
 
     if (username === undefined || email === undefined || roles == undefined)
-      throw { message: 'Missing required attributes' }
+      throw { message: 'Missing required attributes', status: 403 }
 
     const params = {
       UserPoolId: process.env.AWS_USER_POOL_ID,
@@ -84,12 +84,12 @@ router.post('/admin', async (req, res) => {
     await newUser.save()
 
     res.status(201).send({
-      message: 'Success! User Created',
+      message: 'User created by admin',
       data: {},
     })
 
   } catch (err) {
-    res.status(400).send({
+    res.status(err.status | 400).send({
       message: err.message,
       data: {},
     })
@@ -99,6 +99,9 @@ router.post('/admin', async (req, res) => {
 // verify email
 router.put('/:username/verification', async (req, res) => {
   try {
+    if(!req.body.confirmation_code)
+      throw { message: 'Missing required attributes', status: 403 }
+
     const params = {
       ClientId: process.env.AWS_CLIENT_ID,
       ConfirmationCode: req.body.confirmation_code,
@@ -108,12 +111,12 @@ router.put('/:username/verification', async (req, res) => {
     await cognito.confirmSignUp(params).promise()
 
     res.status(200).send({
-      message: 'User Verified',
+      message: 'User verified',
       data: {}
     })
   }
   catch (err) {
-    res.status(400).send({
+    res.status(err.status | 400).send({
       message: err.message,
       data: {}
     })
@@ -124,6 +127,9 @@ router.put('/:username/verification', async (req, res) => {
 router.post('/token', async (req, res) => {
   try {
     const { username, password } = req.body
+
+    if(!username || !password)
+      throw { message: 'Missing required attributes', status: 403 }
 
     const params = {
       AuthFlow: 'USER_PASSWORD_AUTH',
@@ -137,14 +143,14 @@ router.post('/token', async (req, res) => {
     const resData = await cognito.initiateAuth(params).promise()
 
     if(resData.ChallengeName)
-      throw { message: 'Must create new password' }
+      throw { message: 'Must use admin create user auth flow', status: 409 }
 
     const { AuthenticationResult } = resData
 
     const user = await User.findOne({ username }).exec()
 
     if (!user)
-      throw { message: 'User not found' }
+      throw { message: 'User not found', status: 404 }
 
     const token = jwt.sign({
       username: user.username,
@@ -161,7 +167,7 @@ router.post('/token', async (req, res) => {
       }
     })
   } catch (err) {
-    res.status(400).send({
+    res.status(err.status | 400).send({
       message: err.message,
       data: {}
     })
@@ -173,7 +179,7 @@ router.post('/token/temporary', async (req, res) => {
     const { username, temp_password, new_password } = req.body
 
     if (!username || !temp_password || !new_password)
-      throw { message: 'Missing required parameters' }
+      throw { message: 'Missing required parameters', status: 403 }
 
     let params = {
       AuthFlow: 'USER_PASSWORD_AUTH',
@@ -187,7 +193,7 @@ router.post('/token/temporary', async (req, res) => {
     const { ChallengeName, Session } = await cognito.initiateAuth(params).promise()
 
     if(!ChallengeName || ChallengeName !== 'NEW_PASSWORD_REQUIRED')
-      throw { message: 'Invalid authentication parameters' }
+      throw { message: 'Invalid authentication parameters', status: 409 }
     
     params = {
       ChallengeName,
@@ -204,7 +210,7 @@ router.post('/token/temporary', async (req, res) => {
     const user = await User.findOne({ username }).exec()
 
     if (!user)
-      throw { message: 'User not found' }
+      throw { message: 'User not found', status: 404 }
 
     const token = jwt.sign({
       username: user.username,
@@ -220,7 +226,7 @@ router.post('/token/temporary', async (req, res) => {
       }
     })
   } catch(err) {
-    res.status(400).send({
+    res.status(err.status | 400).send({
       message: err.message,
       data: {}
     })

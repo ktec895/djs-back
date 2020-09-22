@@ -135,6 +135,7 @@
                                     <tr>
                                         <th>Status</th>
                                         <th>Code</th>
+                                        <th>Message</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
@@ -142,11 +143,19 @@
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:green'>success</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>201 (Created)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User Created</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>403 (Forbidden)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Missing Required Attributes</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>400 (Bad Request)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Other</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                 </tbody>
@@ -175,6 +184,7 @@
                                     <tr>
                                         <th>Status</th>
                                         <th>Code</th>
+                                        <th>Message</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
@@ -182,11 +192,25 @@
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:green'>success</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>201 (Created)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User created by admin</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>401 (Unauthorized)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Requires admin privilege</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>403 (Forbidden)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Missing required attributes</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>400 (Bad Request)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Other</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                 </tbody>
@@ -216,6 +240,7 @@
                                     <tr>
                                         <th>Status</th>
                                         <th>Code</th>
+                                        <th>Message</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
@@ -223,11 +248,19 @@
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:green'>success</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>200 (OK)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User verified</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>403 (Forbidden)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Missing required attributes</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>400 (Bad Request)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Other</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                 </tbody>
@@ -253,6 +286,7 @@
                                     <tr>
                                         <th>Status</th>
                                         <th>Code</th>
+                                        <th>Message</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
@@ -260,6 +294,7 @@
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:green'>success</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>201 (Created)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User authenticated</td>
                                         <td class="mdl-data-table__cell--non-numeric">
                                             <ul>
                                                 <li>token : String - generated token</li>
@@ -268,7 +303,26 @@
                                     </tr>
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>403 (Forbidden)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Missing required</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>404 (Not Found)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User not found</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>409 (Conflict)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Must use admin create user auth flow</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>400 (Bad Request)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Other</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                 </tbody>
@@ -296,6 +350,7 @@
                                     <tr>
                                         <th>Status</th>
                                         <th>Code</th>
+                                        <th>Message</th>
                                         <th>Data</th>
                                     </tr>
                                 </thead>
@@ -303,6 +358,7 @@
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:green'>success</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>201 (Created)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">New user confirmed and password set</td>
                                         <td class="mdl-data-table__cell--non-numeric">
                                             <ul>
                                                 <li>token : String - generated token</li>
@@ -311,7 +367,26 @@
                                     </tr>
                                     <tr>
                                         <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>403 (Forbidden)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Missing required parameters</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>404 (Not found)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">User not found</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
+                                        <td class='mdl-data-table__cell--non-numeric'>409 (Conflict)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Invalid authentication parameters</td>
+                                        <td class="mdl-data-table__cell--non-numeric">None</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="mdl-data-table__cell--non-numeric"><span style='color:red'>failure</span></td> 
                                         <td class='mdl-data-table__cell--non-numeric'>400 (Bad Request)</td>
+                                        <td class="mdl-data-table__cell--non-numeric">Other</td>
                                         <td class="mdl-data-table__cell--non-numeric">None</td>
                                     </tr>
                                 </tbody>
